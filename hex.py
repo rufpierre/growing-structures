@@ -125,6 +125,7 @@ class Case:
 
 class Grid:
 	cases = []
+	clusters = []
 	def __init__(self, nb_horiz_cases, nb_vert_cases):
 		# on créé les cases
 		for y in range(nb_vert_cases):
@@ -150,6 +151,7 @@ class Grid:
 class Cell:
 	case = None
 	facets_colors = None
+	cluster = None
 	def __init__(self, facets_colors):
 		def letter_to_color(x):
 			letters = "a b c d e f".split()
@@ -176,12 +178,29 @@ class Cell:
 			self.case = new_case
 			# dans la nouvelle case, on specifie cette cellule
 			new_case.cell=self
+		# si la cell n'a aucun cluster defini, on créé lui créé un cluster
+		if self.cluster == None:
+			self.cluster = Cluster()
+			self.cluster.cells.append(self)
+		# si la cell a une cell voisine qui a un cluster, alors on merge les cluster
+#			en cours: il faut une liste des voisins en passant par la case.
+#			si voisin, on merge les cluster (faire l'algo de merge')
 	def touches(cell):
 		#if cell.case.
 		return choice([True, False])
 	def to_str(self):
 		return self.case.to_str()+""
 
+# les clusters sont créés au moment où l'on place une cell sur une case
+# si la cell n'a pas de cluster, on en créé un et lui assigne
+class Cluster:
+	cells=[]
+	def merge(self, cluster):
+		print "merge cluster"
+		
+
+
+#debut du main
 grid = Grid(nb_vcases, nb_hcases)
 
 if False:
@@ -191,7 +210,7 @@ if False:
 			grid.cases.append(case)
 	grid.draw()
 
-tests = True
+tests = False
 
 # tests
 if tests:
@@ -270,10 +289,11 @@ if not tests:
 	print("main use")
 	for i in range(400):
 		cell = Cell("a b a b c c")
-		case = random.choice(grid.cases)
-		while not case.is_free():
-			###print("already occupied")
+		# on cherche une case libre dans la grills
+		isFree=False
+		while not isFree:
 			case = random.choice(grid.cases)
+			isFree = case.is_free()
 		cell.move_to(case)	
 		cell.draw()
 	root.update()
